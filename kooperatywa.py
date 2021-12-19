@@ -50,7 +50,7 @@ Dostępne warzywa i owoce: {list_of_products}''')
 		else:
 			print('Nasi producenci nie hodują takich warzyw/owoców.')
 		print(single_order)
-		print('hej')
+
 
 		quit = input('''dalsze zamówienie - kliknij enter
 koniec zamówienia - kliknij 0 i enter
@@ -59,9 +59,6 @@ koniec zamówienia - kliknij 0 i enter
 			print('Dziękujemy za złożone zamówienie!')
 			break
 	return single_order
-
-def fachunek():
-	return 0
 
 
 
