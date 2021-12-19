@@ -50,6 +50,7 @@ Dostępne warzywa i owoce: {list_of_products}''')
 		else:
 			print('Nasi producenci nie hodują takich warzyw/owoców.')
 		print(single_order)
+		print('hej')
 
 		quit = input('''dalsze zamówienie - kliknij enter
 koniec zamówienia - kliknij 0 i enter
