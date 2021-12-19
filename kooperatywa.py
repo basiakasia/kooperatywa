@@ -60,6 +60,9 @@ koniec zamówienia - kliknij 0 i enter
 			break
 	return single_order
 
+def fachunek():
+	return 0
+
 
 
 def add_products(): 
