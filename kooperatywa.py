@@ -32,9 +32,10 @@ etapy:
 '''
 
 total_order = []
-order_with_names = []
+order_with_names = {} #zmieniłam na słownik gdzie kluczem jest imię, a wartością zamówienie w postaci kolejnego słownika
 final_order = []
 list_of_products = [] 
+costs_of_products = {}
 
 
 def order(list_of_products):
@@ -67,8 +68,10 @@ def add_products():
 
 	while True:
 		name_of_product = input('Warzywa/owoce, które chcesz dodać: ')
+		cost_of_product = int(input('Cena za kilogram: '))
 		list_of_products.append(name_of_product)
-		print(list_of_products)
+		costs_of_products[name_of_product] = cost_of_product
+		print(costs_of_products)
 
 		quit = input('''dalsze dodawanie - kliknij enter
 koniec dodawania - kliknij 0 i enter
@@ -76,7 +79,7 @@ koniec dodawania - kliknij 0 i enter
 		if quit == '0':
 			print('Dziękujemy za deklarację upraw!')
 			break
-	return list_of_products
+
 
 
 
@@ -85,9 +88,9 @@ def sum_of_orders(final_order): # ta funkcja jest chyba przekombinowana, ale ju�
 		print(f'Liczba zamówień: {len(final_order)}')
 		print(final_order)
 		all_all = []
-		for orders in final_order:
-			for key, value in orders[1].items():
-				all_all.append({key:value})
+		for value in final_order.values():
+			for product, amount in value.items():
+				all_all.append({product:amount})
 		print(all_all)
 		result = {}
 		for product in all_all:
@@ -99,9 +102,32 @@ def sum_of_orders(final_order): # ta funkcja jest chyba przekombinowana, ale ju�
 
 def new_client():
 	name = input('Podaj imię i nazwisko: ') # można też jakoś nadawać numery klientom, ale to rozwiązanie wydało mi się łatwiejsze
-	order_with_names.append((name, order(list_of_products)))
+	order_with_names[name] = order(list_of_products)
 	return order_with_names
 
+def final_cost(name, final_order):
+	exact_order = final_order[name]
+	print(exact_order)
+	return exact_order
+
+
+def suma(exact,costs_of_products,harvest_all):
+	final = 0
+	for key in exact.keys():
+		cost = costs_of_products.get(key)*exact[key]*harvest_all.get(key)
+		final += cost
+		print(f'''Cena za {key} to: {cost}zł
+{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {harvest_all.get(key)} nadwyżki zbiorów''')
+	print(f'Łączna kwota do zapłaty to: {final}zł')
+
+
+def harvest(total_order):
+	harvest = dict()
+	for zbiory, kg in total_order.items():
+		actual_number_of_kilograms = int(input(f'{zbiory}: '))
+		harvest[zbiory] = actual_number_of_kilograms/kg
+		#harvest[zbiory].append(actual_number_of_kilograms)
+	return harvest 	
 
 
 def main():
@@ -116,10 +142,28 @@ def main():
 		''')
 			
 		if kto == '1':
-			if list_of_products != []:
-				final_order = new_client()
-			else:
-				print('Nasi producenci jeszcze nie przedstawili deklaracji upraw.')
+			while True:
+				action = input('''Co chcesz zrobić?
+					a) złożyć zamówienie
+					b) odebrać zamówienie
+					''')
+				if action == 'a':
+					if list_of_products != []:
+						final_order = new_client()
+					else:
+						print('Nasi producenci jeszcze nie przedstawili deklaracji upraw.')
+				if action == 'b':
+					if order_with_names != {}:
+						name = input('Podaj imię i nazwisko: ')
+						exact = final_cost(name, final_order)
+						all_all_all = suma(exact,costs_of_products,harvest_all)
+					else:
+						print('Nie możesz jeszcze odebrać zamówienia')
+
+				else:
+					break
+
+
 
 		elif kto == '2':
 
@@ -128,42 +172,36 @@ def main():
 					a) złożyć deklarację upraw
 					b) przyjąć zamówienie
 					c) wprowadzić dane odnośnie zbiorów
-					d) 
+					d) wystawić rachunek
 					''')
 				if action == 'a':
 					final_list_of_products = add_products()
 				if action == 'b': 	
-					if order_with_names != []:
+					if order_with_names != {}:
 						total_order = sum_of_orders(final_order)
 						print(f'Łączna ilość warzyw/owoców do wyhodowania: {total_order}')
 					else:
 						print('Brak zamówień')
 				if action == 'c':
 					print(f'Ile wydało Ci się zebrać plonów? Pamiętaj, że Twoje łączne zamówienie obejmowało: {total_order}')
-					if order_with_names != []:
-						harvest = dict()
-						for zbiory, kg in total_order.items():
-							actual_number_of_kilograms = int(input(f'{zbiory}: '))
-							harvest[zbiory] = [kg]
-							harvest[zbiory].append(actual_number_of_kilograms)
-						return harvest # zwraca mi słownik - klucz = artykuł, wartość = lista z 2 wartościami - ile miało być i ile wyszło finalnie - z tego policzę procent 	
+					if order_with_names != {}:
+						harvest_all = harvest(total_order)
 					else:
 						print('''Nie możesz teraz wykonać tego działania.
 Najpierw należy złożyć deklarację upraw i przyjąć zamówienie''')
 				if action == 'd':
-					print('raz')
-					print(final_order)
-					test = final_order.append('hej')
-					return test	
+					name = input('Podaj imię i nazwisko osoby zamawiającej: ')
+					exact = final_cost(name, final_order)
+					all_all_all = suma(exact,costs_of_products,harvest_all)
+
 				else:
 					break
 
 		
 
-
-
-
 print(main())
+
+
 
 
 
