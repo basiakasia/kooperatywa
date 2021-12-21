@@ -114,10 +114,10 @@ def final_cost(name, final_order):
 def suma(exact,costs_of_products,harvest_all):
 	final = 0
 	for key in exact.keys():
-		cost = costs_of_products.get(key)*exact[key]*harvest_all.get(key)
-		final += cost
+		cost = round(costs_of_products.get(key)*exact[key]*harvest_all.get(key),2)
+		final += round(cost,2)
 		print(f'''Cena za {key} to: {cost}zł
-{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {harvest_all.get(key)} nadwyżki zbiorów''')
+{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {round(harvest_all.get(key),2)} nadwyżki zbiorów''')
 	print(f'Łączna kwota do zapłaty to: {final}zł')
 
 
