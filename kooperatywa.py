@@ -1,36 +1,3 @@
-'''Zgłosiła się do Was kooperatywa spożywcza, która ma problem z komunikacją na linii
-producenci i klienci.
-▸ Chcą, żeby producenci mogli dodawać możliwe do wyhodowania warzywa i owoce.
-▸ Chcą mieć możliwość składania zamówień przez klientów na warzywa i owoce z dostępnej listy.
-▸ Chcą, żeby producenci mogli przyjąć na siebie zlecenia i po zbiorach powinni móc wpisać ile udało im się wychodować jedzenia.
-▸ Po zbiorach klienci mogą odebrać jedzenie, proporcjonalnie do swojego zamówienia, czyli jeśli zamówiłem 10 kg ziemniaków, a wyhodowano 10% więcej, to mogę odebrać
-11 kg ziemniaków.
-▸ * Ceny, czyli chcemy mieć możliwość ustalenia ceny za dane warzywo/owoc i wynagradzania producentów za to co się sprzedało.
-
-producent:
-- dodawanie warzyw/owoców ((jeden pies, nie trzeba tu chyba rozróżniać czy jabłko jest owocem czy warzywem))
-- dodawanie ceny ((przed czy po zbiorach?)) 
-- ilość w kg po zbiorach - ile procent więcej/mniej im się udało ((czyli na początku liczymy ile było zamówień
-a potem się do tego odnosimy))
-- finalny zysk 
-
-klient:
-- składanie zamówienia
-	- co 
-	- ile zamawia
-	- finalny rachunek 
-
-etapy:
----- przed zbiorami ----
-1) dodawanie             PRODUCENT input
-2) składanie zamówień    KLIENCI input
-3) przyjmowanie zlecenia PRODUCENT (po prostu informacja? ten punkt powinien zablokować możliwość powrotu do 2 poprzednich)
----- po zbiorach ----
-3) wynik zbiorów + cena	 PRODUCENT input
-4) info dla klienta i dla producenta = rachunek? 
-
-'''
-
 total_order = []
 order_with_names = {} #zmieniłam na słownik gdzie kluczem jest imię, a wartością zamówienie w postaci kolejnego słownika
 final_order = []
@@ -42,6 +9,8 @@ def order(list_of_products):
 
 	print(f'''Złóż swoje zamówienie
 Dostępne warzywa i owoce: {list_of_products}''')
+	for products, cost in costs_of_products.items(): # takie dodałam, żeby było wiadomo ile co kosztuje
+		print(f'{products} - {cost} zł/kg')
 	single_order = {}
 	while True:
 		name_of_product = input('Warzywa/owoce, które chcesz zamówić: ')
@@ -62,7 +31,6 @@ koniec zamówienia - kliknij 0 i enter
 	return single_order
 
 
-
 def add_products(): 
 	print('Dodaj możliwe do wyhodowania warzywa i owoce.')
 
@@ -81,8 +49,6 @@ koniec dodawania - kliknij 0 i enter
 			break
 
 
-
-
 def sum_of_orders(final_order): # ta funkcja jest chyba przekombinowana, ale już się zapadłam w jednym toku myślenia
 	if final_order != []:
 		print(f'Liczba zamówień: {len(final_order)}')
@@ -99,11 +65,11 @@ def sum_of_orders(final_order): # ta funkcja jest chyba przekombinowana, ale ju�
 	return result
 
 
-
 def new_client():
 	name = input('Podaj imię i nazwisko: ') # można też jakoś nadawać numery klientom, ale to rozwiązanie wydało mi się łatwiejsze
 	order_with_names[name] = order(list_of_products)
 	return order_with_names
+
 
 def final_cost(name, final_order):
 	exact_order = final_order[name]
@@ -117,8 +83,8 @@ def suma(exact,costs_of_products,harvest_all):
 		cost = round(costs_of_products.get(key)*exact[key]*harvest_all.get(key),2)
 		final += round(cost,2)
 		print(f'''Cena za {key} to: {cost}zł
-{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {round(harvest_all.get(key),2)} nadwyżki zbiorów''')
-	print(f'Łączna kwota do zapłaty to: {final}zł')
+{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {round(harvest_all.get(key),2)} nadwyżki/niedoboru zbiorów''')
+	print(f'Łączna kwota do zapłaty to: {round(final,2)}zł')
 
 
 def harvest(total_order):
@@ -153,7 +119,7 @@ def main():
 					else:
 						print('Nasi producenci jeszcze nie przedstawili deklaracji upraw.')
 				if action == 'b':
-					if order_with_names != {}:
+					if order_with_names != {}: # ! napraw to kiedyś
 						name = input('Podaj imię i nazwisko: ')
 						exact = final_cost(name, final_order)
 						all_all_all = suma(exact,costs_of_products,harvest_all)
@@ -162,7 +128,6 @@ def main():
 
 				else:
 					break
-
 
 
 		elif kto == '2':
@@ -195,9 +160,7 @@ Najpierw należy złożyć deklarację upraw i przyjąć zamówienie''')
 					all_all_all = suma(exact,costs_of_products,harvest_all)
 
 				else:
-					break
-
-		
+					break	
 
 print(main())
 
