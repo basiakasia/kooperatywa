@@ -1,15 +1,21 @@
-total_order = []
-order_with_names = {} #zmieniłam na słownik gdzie kluczem jest imię, a wartością zamówienie w postaci kolejnego słownika
-final_order = []
-list_of_products = [] 
+
+'''db = {'order_with_names':{},
+'final_order':[],
+'list_of_products':[] 
+'costs_of_products':{}
+}
+'''
 costs_of_products = {}
+order_with_names = {} 
+final_order = []
+list_of_products = []
 
 
-def order(list_of_products):
+def order(list_of_products, costs_of_products): #funkcja przyjmuje listę stringów produktów i dict produktów z ceną zadeklarowanych przez Producenta, z tych produktów Klient wybiera co i ile chce, funkcja zwraca dict - pojedyncze zamówienie 
 
 	print(f'''Złóż swoje zamówienie
 Dostępne warzywa i owoce: {list_of_products}''')
-	for products, cost in costs_of_products.items(): # takie dodałam, żeby było wiadomo ile co kosztuje
+	for products, cost in costs_of_products.items():
 		print(f'{products} - {cost} zł/kg')
 	single_order = {}
 	while True:
@@ -31,7 +37,8 @@ koniec zamówienia - kliknij 0 i enter
 	return single_order
 
 
-def add_products(): 
+def add_products(): #funkcja dla Producenta zwraca listę hodowanych przez niego artykułów oraz dict z produkatami i ceną 
+
 	print('Dodaj możliwe do wyhodowania warzywa i owoce.')
 
 	while True:
@@ -47,9 +54,10 @@ koniec dodawania - kliknij 0 i enter
 		if quit == '0':
 			print('Dziękujemy za deklarację upraw!')
 			break
+	return list_of_products, costs_of_products
 
 
-def sum_of_orders(final_order): # ta funkcja jest chyba przekombinowana, ale już się zapadłam w jednym toku myślenia
+def sum_of_orders(final_order): # funkcja przyjmuje listę final order - wszystkie zamówienia, zwraca podsumowanie dla Producenta - ile czego ma wyhodować
 	if final_order != []:
 		print(f'Liczba zamówień: {len(final_order)}')
 		print(final_order)
@@ -61,42 +69,47 @@ def sum_of_orders(final_order): # ta funkcja jest chyba przekombinowana, ale ju�
 		result = {}
 		for product in all_all:
 			for k in product.keys():
-				result[k] = result.get(k, 0) + product[k] # tu się dzieje jakaś magia, nie rozumiem ale działa
+				result[k] = result.get(k, 0) + product[k] # tu się dzieje jakaś magia
 	return result
 
 
-def new_client():
-	name = input('Podaj imię i nazwisko: ') # można też jakoś nadawać numery klientom, ale to rozwiązanie wydało mi się łatwiejsze
-	order_with_names[name] = order(list_of_products)
+def new_client(): # funkcja dodaje nowego klienta i jego zamówienie 
+	name = input('Podaj imię i nazwisko: ') 
+	order_with_names[name] = order(list_of_products, costs_of_products)
 	return order_with_names
 
+def new_producent():
+	producent_name = input('Podaj imię i nazisko:')
 
-def final_cost(name, final_order):
+
+def final_cost(name, final_order): # czy potrzebna?
 	exact_order = final_order[name]
 	print(exact_order)
 	return exact_order
 
 
-def suma(exact,costs_of_products,harvest_all):
+def suma(exact,costs_of_products,harvest_all): # funkcja przyjmuje konkretne zamówienie, dict z produktami i cenami i finalne zbiory, zwraca rachunek
 	final = 0
 	for key in exact.keys():
 		cost = round(costs_of_products.get(key)*exact[key]*harvest_all.get(key),2)
 		final += round(cost,2)
-		print(f'''Cena za {key} to: {cost}zł
-{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {round(harvest_all.get(key),2)} nadwyżki/niedoboru zbiorów''')
+		print(f'''Kwota do zapłaty za {key} ({costs_of_products.get(key)}zł/kg) to: {cost}zł
+{costs_of_products.get(key)}zł/kg * {exact[key]} kg * {round(harvest_all.get(key),2)} nadwyżki/niedoboru zbiorów''') #dobra, tutaj powinno być pytanie czy Klient chce tę nadwyżkę, kiedyś
 	print(f'Łączna kwota do zapłaty to: {round(final,2)}zł')
+	return suma
 
 
-def harvest(total_order):
+def harvest(total_order): # funkcja przyjmuje zamówienie, zwraca wynik zbiorów  
 	harvest = dict()
 	for zbiory, kg in total_order.items():
 		actual_number_of_kilograms = int(input(f'{zbiory}: '))
 		harvest[zbiory] = actual_number_of_kilograms/kg
 		#harvest[zbiory].append(actual_number_of_kilograms)
-	return harvest 	
+	return harvest	
 
 
 def main():
+	total_order = []
 	print('Witamy w Kooperatywie Dobrze!')
 
 	while True:
@@ -119,16 +132,14 @@ def main():
 					else:
 						print('Nasi producenci jeszcze nie przedstawili deklaracji upraw.')
 				if action == 'b':
-					if order_with_names != {}: # ! napraw to kiedyś
+					if total_order != []:
 						name = input('Podaj imię i nazwisko: ')
 						exact = final_cost(name, final_order)
 						all_all_all = suma(exact,costs_of_products,harvest_all)
 					else:
 						print('Nie możesz jeszcze odebrać zamówienia')
-
 				else:
 					break
-
 
 		elif kto == '2':
 
